@@ -3,26 +3,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Employee</title>
+  <title>Edit Employee</title>
 </head>
 <body>
-<form method="post" action="/employees/edit">
-    <p>
-        <input type="hidden" name="id" value="<c:out value="${id}"/>"/>
-    </p>
-    <p> empName <input type="text" name="name"> </p>
-    <p> empActive <input type="checkbox" name="active"> </p>
+  <script src="pager.js"></script>
+  <form method="post" action="/employees/edit">
+    <p> <input type="hidden" name="id" value="<c:out value="${employee.id}"/>"/> </p>
+    <p> empName <input type="text" name="name" value="${employee.name}"> </p>
+    <p> empActive <input type="checkbox" id="isActive" name="active"> </p>
     <p> empDepartment
-        <select name="department">
-            <c:forEach items="${departments}" var="department">
-               <option value="<c:out value="${department.dpID}"/>">
-                   <c:out value="${department.dpName}" />
-               </option>
-            </c:forEach>
-        </select>
-    <p> <input type="submit"  value="Save">
-    <input type="reset" value="Cancel"> </p>
+      <select name="department">
+        <c:forEach items="${departments}" var="department">
+          <option value="<c:out value="${department.dpID}"/>">
+            <c:out value="${department.dpName}" />
+          </option>
+        </c:forEach>
+      </select>
     </p>
-</form>
+    <p><input type="submit"  value="Save">
+      <input type="button" value="Cancel" onclick="window.history.back()">
+    </p>
+  </form>
+  <script>
+    setCurrentValues("${employee.department}", "${employee.active}");
+  </script>
 </body>
 </html>

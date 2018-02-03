@@ -15,6 +15,14 @@
 		<url-pattern>/</url-pattern>
 		<url-pattern>/employees</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewStatusMessages</servlet-name>
+		<url-pattern>/lbClassicStatus</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ViewStatusMessages</servlet-name>
+		<servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
+	</servlet>
 	<welcome-file-list>
 		<welcome-file>employees</welcome-file>
 	</welcome-file-list>
