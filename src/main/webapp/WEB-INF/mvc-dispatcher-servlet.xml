@@ -18,6 +18,12 @@
         </property>
     </bean>
 
+    <bean id="sqlServerDao" class="dao.SqlServerDao" scope="prototype"/>
+    <bean id="pager" class="pager.Pager" scope="prototype"/>
+    <bean id="connection" class="dbconnection.DatabaseConnection" scope="prototype">
+        <constructor-arg value="jdbc:sqlserver://localhost:1433;databaseName = gregs_list;integratedSecurity = true"/>
+    </bean>
+
     <mvc:resources mapping="/resources/**" location="/WEB-INF/pages/" />
     <mvc:annotation-driven />
 </beans>

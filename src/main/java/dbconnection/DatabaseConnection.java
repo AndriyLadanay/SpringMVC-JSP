@@ -5,19 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName = gregs_list;integratedSecurity = true";
-    public static Connection getConnection(){
+    private Connection connection;
+    public DatabaseConnection(String URL){
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            Connection connection = DriverManager.getConnection(URL);
-            return connection;
+            this.connection = DriverManager.getConnection(URL);
         }
         catch(Exception e){
             e.printStackTrace();
-            return null;
         }
     }
-    public void close(Connection connection) {
+    public Connection getConnection(){
+        return connection;
+    }
+    public void close() {
         try {
             connection.close();
         } catch (SQLException e) {

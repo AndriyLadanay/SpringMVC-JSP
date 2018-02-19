@@ -1,6 +1,7 @@
 package pager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Pager {
    private ArrayList<Integer> range(int start, int end){
@@ -10,7 +11,7 @@ public class Pager {
        }
        return numbers;
    }
-   public ArrayList<Integer> getPagesLinks(int page, int lastPage){
+   public List<Integer> getPagesLinks(int page, int lastPage){
        int start;
        int end;
        if (page % 10 == 0){

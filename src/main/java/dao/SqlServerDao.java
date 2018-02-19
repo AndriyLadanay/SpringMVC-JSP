@@ -2,27 +2,28 @@ package dao;
 
 import dbconnection.DatabaseConnection;
 import exceptions.EmployeeNotFoundException;
+import exceptions.PageDoesntExistException;
 import model.Department;
 import model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class SqlServerDao {
-    private Connection connection;
+public class SqlServerDao implements EmployeeDao {
+
+    @Autowired
+    private DatabaseConnection db;
     private String sql = "select emp.empID, emp.empName, emp.empActive, dep.dpName from tblEmployees as emp" +
                          " INNER JOIN tblDepartments as dep ON emp.emp_dpID = dep.dpID ";
-    public SqlServerDao(){
-        this.connection = DatabaseConnection.getConnection();
-    }
 
-    public boolean update(int UserID, String name, int active, int department) throws SQLException{
-            PreparedStatement statement = connection.prepareStatement("UPDATE tblEmployees set empName = ?, emp_dpID = ?," +
+    public boolean update(int ID, String name, int active, int department) throws SQLException{
+            PreparedStatement statement = db.getConnection().prepareStatement("UPDATE tblEmployees set empName = ?, emp_dpID = ?," +
                     " empActive=? where empID = ?");
             statement.setString(1, name);
             statement.setInt(2, department);
             statement.setInt(3, active);
-            statement.setInt(4, UserID);
+            statement.setInt(4, ID);
             if(statement.executeUpdate() == 1){
                 return true;
             }
@@ -32,7 +33,7 @@ public class SqlServerDao {
     }
 
     public boolean delete(int ID) throws SQLException{
-            PreparedStatement statement = connection.prepareStatement("DELETE from tblEmployees WHERE empID = ?");
+            PreparedStatement statement = db.getConnection().prepareStatement("DELETE from tblEmployees WHERE empID = ?");
             statement.setInt(1, ID);
             if(statement.executeUpdate() == 1){
                 return true;
@@ -40,8 +41,8 @@ public class SqlServerDao {
             else return false;
     }
 
-    public Employee getEmployee(int id) throws SQLException, EmployeeNotFoundException{
-        Statement statement = connection.createStatement();
+    public Employee read(int id) throws SQLException, EmployeeNotFoundException{
+        Statement statement = db.getConnection().createStatement();
         ArrayList<Employee> list = resultSetToEmployees(statement.executeQuery(sql + " where empID = " + id));
         if(list.size() == 0){
             throw new EmployeeNotFoundException(id);
@@ -49,47 +50,26 @@ public class SqlServerDao {
         else return list.get(0);
     }
 
-    public void insertEmployee(String name, int active, int department) throws SQLException{
-            PreparedStatement statement = connection.prepareStatement("insert into tblEmployees (empName, empActive, emp_dpID)\n" +
+    public void insert(String name, int active, int department) throws SQLException{
+            PreparedStatement statement = db.getConnection().prepareStatement("insert into tblEmployees (empName, empActive, emp_dpID)\n" +
                     "values (?, ?, ?)");
             statement.setString(1, name);
             statement.setInt(2, active);
             statement.setInt(3, department);
-            statement.executeUpdate();
+            System.out.println(statement.executeUpdate());
     }
 
-    public ArrayList<Employee> searchByName(String name, int page) throws SQLException{
-        ArrayList<Employee> list;
-        int recordsCount = countOfName(name);
-        int lastPage = lastPage(recordsCount);
-        int distanceToTheEnd = lastPage - page;
-        if(page <= distanceToTheEnd) {
-            PreparedStatement statement = connection.prepareStatement(sql + " WHERE empName LIKE '"
-                    + name + "%' ORDER BY empName, empID OFFSET (?) ROWS FETCH FIRST ? ROWS ONLY;");
-            statement.setInt(1, (page - 1) * 10);
-            statement.setInt(2, 10);
-            ResultSet set = statement.executeQuery();
-            list = resultSetToEmployees(set);
+    public ArrayList<Employee> search(String name, int page, int pageSize) throws SQLException,
+            PageDoesntExistException {
+        PreparedStatement statement = db.getConnection().prepareStatement(sql + " WHERE empName LIKE '"
+                + name + "%' ORDER BY empName, empID OFFSET (?) ROWS FETCH FIRST ? ROWS ONLY;");
+        statement.setInt(1, (page - 1) * pageSize);
+        statement.setInt(2, pageSize);
+        ResultSet set = statement.executeQuery();
+        ArrayList<Employee> list = resultSetToEmployees(set);
+        if(list.size() == 0) {
+            throw new PageDoesntExistException();
         }
-        else {
-            int recordsOnLastPage = recordsCount % 10;
-            if(recordsOnLastPage == 0){
-                recordsOnLastPage = 10;
-            }
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM (" + sql +
-                        " WHERE empName LIKE '" + name + "%' ORDER BY empName, empID DESC OFFSET (?) " +
-                        "ROWS FETCH FIRST ? ROWS ONLY) as a ORDER BY empName, empID");
-                if (page == lastPage){
-                    statement.setInt(1, 0);
-                    statement.setInt(2, recordsOnLastPage);
-                }
-                else {
-                    statement.setInt(1, recordsOnLastPage + (lastPage - page - 1)*10);
-                    statement.setInt(2, 10);
-                }
-                ResultSet set = statement.executeQuery();
-                list = resultSetToEmployees(set);
-            }
         return list;
     }
 
@@ -110,20 +90,9 @@ public class SqlServerDao {
         return list;
     }
 
-    public ArrayList<Employee> getPage(int page) throws SQLException{
-        ArrayList<Employee> list = new ArrayList<>();
-        PreparedStatement statement = connection.prepareStatement(sql + "ORDER BY empID" +
-                " OFFSET ? ROWS FETCH FIRST ? ROWS ONLY");
-        statement.setInt(1, (page - 1) * 10);
-        statement.setInt(2, 10);
-        ResultSet set = statement.executeQuery();
-        list = resultSetToEmployees(set);
-        return list;
-    }
-
-    public ArrayList<Department> getDepartments() throws SQLException{
+    public ArrayList<Department> departments() throws SQLException{
         ArrayList<Department> list = new ArrayList<>();
-        Statement statement = connection.createStatement();
+        Statement statement = db.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM tblDepartments");
         while (resultSet.next()){
             Department department = new Department();
@@ -134,26 +103,29 @@ public class SqlServerDao {
         return list;
     }
 
-    public ArrayList<Employee> getPage(int page, int pageSize) throws SQLException {
-        ArrayList<Employee> employees;
-        PreparedStatement statement = connection.prepareStatement
+    public ArrayList<Employee> page(int page, int pageSize) throws SQLException,
+            PageDoesntExistException {
+        PreparedStatement statement = db.getConnection().prepareStatement
                 (sql + " ORDER BY empID offset ? ROWS FETCH FIRST ? ROWS ONLY");
         statement.setInt(1, (page - 1) * pageSize);
         statement.setInt(2, pageSize);
-        employees = resultSetToEmployees(statement.executeQuery());
+        ArrayList<Employee> employees = resultSetToEmployees(statement.executeQuery());
+        if (employees.size() == 0) {
+            throw new PageDoesntExistException();
+        }
         return employees;
     }
 
     public int count() throws SQLException {
-        Statement statement = connection.createStatement();
+        Statement statement = db.getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT Total_Rows= SUM(st.row_count) " +
-                    "FROM sys.dm_db_partition_stats st WHERE " +
-                    " object_id=OBJECT_ID('tblEmployees') AND (index_id < 2)");
+                "FROM sys.dm_db_partition_stats st WHERE " +
+                " object_id=OBJECT_ID('tblEmployees') AND (index_id < 2)");
         resultSet.next();
         return resultSet.getInt(1);
     }
     public int countOfName(String name) throws SQLException{
-        Statement statement = connection.createStatement();
+        Statement statement = db.getConnection().createStatement();
         String sql = "SELECT COUNT (*) FROM tblEmployees WHERE empName LIKE '" + name + "%'";
         ResultSet set = statement.executeQuery(sql);
         set.next();
