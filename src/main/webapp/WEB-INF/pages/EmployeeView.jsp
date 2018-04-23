@@ -21,7 +21,7 @@
         <td> ${employee.id} </td>
         <td> ${employee.name} </td>
         <td> ${employee.active} </td>
-        <td> ${employee.department} </td>
+        <td> ${employee.department.name} </td>
       </tr>
     </tbody>
   </table>

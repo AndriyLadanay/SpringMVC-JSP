@@ -16,7 +16,7 @@
       <a href="/employees/<c:out value="${number}"/>"> <c:out value="${number}"/></a>
     </c:forEach>
     <button id="next" onclick="next(${currentPage} + 1, ${lastPage})"> > </button>
-    <button id="last" onclick="lastPage()"> >> </button>
+    <button id="last" onclick="location.href='/employees/${lastPage}'"> >> </button>
   </p>
   <table border=1>
     <thead>
@@ -37,8 +37,8 @@
           <td><a href="/employees/edit/<c:out value="${employee.id}"/>">Edit</a></td>
           <td><c:out value="${employee.id}" /></td>
           <td><c:out value="${employee.name}" /></td>
-          <td><c:out value="${employee.active}" /></td>
-          <td><c:out value="${employee.department}" /></td>
+          <td><c:out value="${employee.active ? 'yes' : 'no' }" /></td>
+          <td><c:out value="${employee.department.name}" /></td>
           <td><a href="/employees/delete/<c:out value="${employee.id}"/>">Delete</a></td>
         </tr>
       </c:forEach>

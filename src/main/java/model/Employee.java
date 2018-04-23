@@ -3,8 +3,20 @@ package model;
 public class Employee {
     private int id;
     private String name;
-    private String active;
-    private String department;
+    private boolean active;
+    private Department department;
+
+    public Employee() {
+
+    }
+
+    public Employee(String name, boolean active, Department department) {
+        this.name = name;
+        this.active = active;
+        this.department = new Department();
+        this.department.setID(department.getID());
+        this.department.setName(department.getName());
+    }
 
     public int getId() {
         return id;
@@ -22,23 +34,18 @@ public class Employee {
         this.name = name;
     }
 
-    public String getActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(String active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
-    public String getDepartment() {
-        return department;
-    }
+    public Department getDepartment() { return department; }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public String toString(){
-        return id + " " + name + " " + active + " " + department;
-    }
 }

@@ -69,15 +69,3 @@ function setCurrentValues(dpName, isActive){      //set current values of employ
         y.checked = false;
     }
 }
-
-function lastPage() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var lastPage = this.responseText;
-            location.assign("/employees/" + lastPage);
-        }
-    };
-    xhttp.open("GET", "employees/lastPage", true);
-    xhttp.send();
-}

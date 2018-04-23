@@ -12,8 +12,8 @@
     <p> empDepartment
       <select name="department">
         <c:forEach items="${departments}" var="department">
-          <option value="<c:out value="${department.dpID}"/>">
-            <c:out value="${department.dpName}" />
+          <option value="<c:out value="${department.ID"/>">
+            <c:out value="${department.name}" />
           </option>
         </c:forEach>
       </select>

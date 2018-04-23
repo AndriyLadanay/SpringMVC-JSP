@@ -1,22 +1,31 @@
 package model;
 
 public class Department {
-    private int dpID;
-    private String dpName;
+    private int ID;
+    private String name;
 
-    public int getDpID() {
-        return dpID;
+    public Department(){
+
     }
 
-    public void setDpID(int dpID) {
-        this.dpID = dpID;
+    public Department(int id, String name){
+        this.ID = id;
+        this.name = name;
     }
 
-    public String getDpName() {
-        return dpName;
+    public int getID() {
+        return ID;
     }
 
-    public void setDpName(String dpName) {
-        this.dpName = dpName;
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -37,7 +37,7 @@
           <td><c:out value="${employee.id}" /></td>
           <td><c:out value="${employee.name}" /></td>
           <td><c:out value="${employee.active}" /></td>
-          <td><c:out value="${employee.department}" /></td>
+          <td><c:out value="${employee.department.name}" /></td>
           <td><a href="/employees/delete/<c:out value="${employee.id}"/>">Delete</a></td>
         </tr>
       </c:forEach>

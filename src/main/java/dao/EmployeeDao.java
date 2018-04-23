@@ -1,21 +1,25 @@
 package dao;
 
+import dbconnection.DatabaseConnection;
 import exceptions.EmployeeNotFoundException;
 import exceptions.PageDoesntExistException;
 import model.Department;
 import model.Employee;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface EmployeeDao {
 
-    void insert(String name, int active, int department) throws SQLException;
+    Connection getConnection();
 
-    boolean update(int ID, String name, int active, int department) throws SQLException;
+    boolean create(String name, boolean active, int dpID) throws SQLException;
 
-    Employee read(int ID) throws SQLException, EmployeeNotFoundException;
+    Employee read(int ID) throws SQLException;
+
+    boolean update(int ID, String name, boolean active, int dpID) throws SQLException;
 
     boolean delete(int ID) throws SQLException;
 
@@ -23,11 +27,9 @@ public interface EmployeeDao {
 
     int countOfName(String name) throws SQLException;
 
-    ArrayList<Employee> page(int page, int pageSize) throws SQLException, PageDoesntExistException;
+    List<Employee> find(int take, int skip) throws SQLException;
 
-    ArrayList<Employee> search(String name, int page, int pageSize) throws SQLException, PageDoesntExistException;
-
-    int lastPage(int recordsAmount) ;
+    List<Employee> find(String name, int take, int skip) throws SQLException;
 
     List<Department> departments() throws SQLException;
 

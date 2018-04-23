@@ -6,16 +6,16 @@
   <title>Edit Employee</title>
 </head>
 <body>
-  <script src="pager.js"></script>
+  <script src="/resources/pager.js"></script>
   <form method="post" action="/employees/edit">
     <p> <input type="hidden" name="id" value="<c:out value="${employee.id}"/>"/> </p>
     <p> empName <input type="text" name="name" value="${employee.name}"> </p>
     <p> empActive <input type="checkbox" id="isActive" name="active"> </p>
     <p> empDepartment
-      <select name="department">
+      <select name="dpID">
         <c:forEach items="${departments}" var="department">
-          <option value="<c:out value="${department.dpID}"/>">
-            <c:out value="${department.dpName}" />
+          <option value="<c:out value="${department.ID}"/>">
+            <c:out value="${department.name}" />
           </option>
         </c:forEach>
       </select>
@@ -25,7 +25,7 @@
     </p>
   </form>
   <script>
-    setCurrentValues("${employee.department}", "${employee.active}");
+    setCurrentValues("${employee.department.name}", "${employee.active}");
   </script>
 </body>
 </html>

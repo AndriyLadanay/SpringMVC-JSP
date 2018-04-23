@@ -17,10 +17,11 @@
             <value>.jsp</value>
         </property>
     </bean>
-
-    <bean id="sqlServerDao" class="dao.SqlServerDao" scope="prototype"/>
-    <bean id="pager" class="pager.Pager" scope="prototype"/>
-    <bean id="connection" class="dbconnection.DatabaseConnection" scope="prototype">
+    <bean id="pageService" class="services.PageServiceImpl"/>
+    <bean id="departmentService" class="services.DepartmentServiceImpl" />
+    <bean id="employeeService" class="services.EmployeeServiceImpl" />
+    <bean id="employeeDao" class="dao.EmployeeDaoImpl" />
+    <bean id="connection" class="dbconnection.DatabaseConnection">
         <constructor-arg value="jdbc:sqlserver://localhost:1433;databaseName = gregs_list;integratedSecurity = true"/>
     </bean>
 
